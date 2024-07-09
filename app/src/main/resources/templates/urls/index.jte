@@ -1,5 +1,5 @@
-@import hexlet.code.dto.BasePage
-@param BasePage page = null
+@import hexlet.code.dto.UrlsPage
+@param UrlsPage page = null
 
 <!DOCTYPE html>
 <html>
@@ -41,28 +41,38 @@
     @endif
     <section>
 
-        <div class="container-fluid bg-dark p-5">
-            <div class="row">
-                <div class="col-md-10 col-lg-8 mx-auto text-white">
-                    <h1 class="display-3 mb-0">Анализатор страниц</h1>
-                    <p class="lead">Бесплатно проверяйте сайты на SEO пригодность</p>
-                    <form action="/urls" method="post" class="rss-form text-body">
-                        <div class="row">
-                            <div class="col">
-                                <div class="form-floating">
-                                    <input id="url-input" autofocus type="text" required name="url" aria-label="url"
-                                           class="form-control w-100" placeholder="ссылка" autocomplete="off">
-                                    <label for="url-input">Ссылка</label>
-                                </div>
-                            </div>
-                            <div class="col-auto">
-                                <button type="submit" class="h-100 btn btn-lg btn-primary px-sm-5">Проверить</button>
-                            </div>
-                        </div>
-                    </form>
-                    <p class="mt-2 mb-0 text-muted">Пример: https://www.example.com</p>
-                </div>
-            </div>
+        <div class="container-lg mt-5">
+            <h1>Сайты</h1>
+
+            <table class="table table-bordered table-hover mt-3">
+                <thead>
+                <tr>
+                    <th class="col-1">ID</th>
+                    <th>Имя</th>
+                    <th class="col-2">Последняя проверка</th>
+                    <th class="col-1">Код ответа</th>
+                </tr>
+                </thead>
+                <tbody>
+                @if (page != null)
+                @for (var url : page.getUrls())
+                    <tr>
+                        <td>
+                            ${url.getId()}
+                        </td>
+                        <td>
+                            <a href="/urls/${url.getId()}">${url.getName()}</a>
+                        </td>
+                        <td>
+                            ${url.getCreatedAt().toString()}
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                @endfor
+                @endif
+                </tbody>
+            </table>
         </div>
 
     </section>
