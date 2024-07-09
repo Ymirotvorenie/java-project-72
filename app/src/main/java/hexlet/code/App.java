@@ -12,9 +12,9 @@ import java.sql.SQLException;
 import java.util.stream.Collectors;
 
 public class App {
-    private final static int PORT = 7070;
+    private static final int PORT = 7070;
 
-    public static void main(String[] args) throws SQLException{
+    public static void main(String[] args) throws SQLException {
         var app = getApp();
 
         app.start(PORT);
