@@ -35,6 +35,9 @@ dependencies {
     implementation("com.h2database:h2:2.2.224")
     implementation("com.zaxxer:HikariCP:5.1.0")
 
+    //PostgreSQL
+    implementation ("org.postgresql:postgresql:42.5.4")
+
     //Javalin
     implementation("io.javalin:javalin:6.1.4")
     implementation("io.javalin:javalin-bundle:6.1.3")
