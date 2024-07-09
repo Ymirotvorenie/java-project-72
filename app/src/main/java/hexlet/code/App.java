@@ -12,12 +12,11 @@ import java.sql.SQLException;
 import java.util.stream.Collectors;
 
 public class App {
-    private static final int PORT = 7070;
 
     public static void main(String[] args) throws SQLException {
         var app = getApp();
 
-        app.start(PORT);
+        app.start(getPort());
     }
     public static Javalin getApp() throws SQLException {
 
@@ -47,5 +46,10 @@ public class App {
 
     public static String getUrl() {
         return System.getenv().getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;");
+    }
+
+    public static int getPort() {
+
+        return Integer.parseInt(System.getenv().getOrDefault("PORT", "7070"));
     }
 }
