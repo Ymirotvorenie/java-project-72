@@ -6,6 +6,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class UrlPage extends BasePage{
+public class UrlPage extends BasePage {
     private Url url;
 }
