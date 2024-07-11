@@ -36,7 +36,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:5.1.0")
 
     //PostgreSQL
-    implementation ("org.postgresql:postgresql:42.5.4")
+    implementation ("org.postgresql:postgresql:42.7.3")
 
     //Javalin
     implementation("io.javalin:javalin:6.1.4")
@@ -49,8 +49,16 @@ dependencies {
     //Logger
     implementation("org.slf4j:slf4j-simple:2.0.13")
 
+    //Unirest
+    implementation("com.mashape.unirest:unirest-java:1.4.9")
+
     implementation("com.fasterxml.jackson.core:jackson-databind:2.17.0")
     implementation("org.apache.commons:commons-text:1.11.0")
+
+    //MockWebServer
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
+
+    implementation("com.google.guava:guava:33.2.0-jre")
 
 }
 

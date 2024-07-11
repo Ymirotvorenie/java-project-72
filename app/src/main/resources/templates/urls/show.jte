@@ -26,7 +26,7 @@
             </table>
 
             <h2 class="mt-5">Проверки</h2>
-            <form method="post" action="/urls/1/checks">
+            <form method="post" action="/urls/${page.getUrl().getId()}/checks">
                 <button type="submit" class="btn btn-primary">Запустить проверку</button>
             </form>
 
@@ -40,7 +40,30 @@
                 <th class="col-2">Дата проверки</th>
                 </thead>
                 <tbody>
-
+                    @if(!page.getChecks().isEmpty())
+                        @for(var check : page.getChecks())
+                            <tr>
+                                <td>
+                                    ${check.getId()}
+                                </td>
+                                <td>
+                                    ${check.getStatusCode()}
+                                </td>
+                                <td>
+                                    ${check.getTitle()}
+                                </td>
+                                <td>
+                                    ${check.getH1()}
+                                </td>
+                                <td>
+                                    ${check.getDescription()}
+                                </td>
+                                <td>
+                                    ${check.getCreatedAt().toString()}
+                                </td>
+                            </tr>
+                        @endfor
+                    @endif
                 </tbody>
             </table>
         </div>

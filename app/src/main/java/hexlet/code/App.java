@@ -20,6 +20,7 @@ import static io.javalin.rendering.template.TemplateUtil.model;
 
 public class App {
 
+
     public static void main(String[] args) throws SQLException {
         var app = getApp();
 
@@ -46,6 +47,11 @@ public class App {
             config.fileRenderer(new JavalinJte(createTemplateEngine()));
         });
 
+        app.before(ctx -> {
+            ctx.contentType("text/html; charset=utf-8");
+            ctx.header("Content-encoding", "identity");
+        });
+
         //app.get("/", ctx -> ctx.result("Hello world"));
         app.get("/", ctx -> {
             var page = new BasePage();
@@ -56,6 +62,7 @@ public class App {
         app.get("/urls", UrlsController::index);
         app.post("/urls", UrlsController::create);
         app.get("/urls/{id}", UrlsController::show);
+        app.post("/urls/{id}/checks", UrlsController::check);
 
         return app;
     }
