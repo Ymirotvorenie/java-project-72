@@ -3,6 +3,7 @@ package hexlet.code.controllers;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import hexlet.code.dto.BasePage;
 import hexlet.code.dto.UrlsPage;
 import hexlet.code.dto.UrlPage;
 import hexlet.code.model.Url;
@@ -26,10 +27,8 @@ public class UrlsController {
 
     public static void index(Context ctx) throws SQLException {
         var urls = UrlRepository.getEntities();
-
         var page = new UrlsPage(urls);
-        page.setFlash(ctx.consumeSessionAttribute("flash"));
-        page.setVariant(ctx.consumeSessionAttribute("flashVariant"));
+        pageSetFlash(ctx, page);
         ctx.render("urls/index.jte", model("page", page));
     }
 
@@ -38,32 +37,27 @@ public class UrlsController {
         var url = UrlRepository.findById(id).orElseThrow(() -> new NotFoundResponse("Url not found"));
         var checks = UrlCheckRepository.getUrlChecks(id);
         var page = new UrlPage(url, checks);
-        page.setFlash(ctx.consumeSessionAttribute("flash"));
-        page.setVariant(ctx.consumeSessionAttribute("flashVariant"));
+        pageSetFlash(ctx, page);
         ctx.render("urls/show.jte", model("page", page));
     }
 
     public static void create(Context ctx) throws SQLException {
         try {
             var input = ctx.formParam("url");
-            var uri = URI.create(input);
-            var checkedUrl = uri.toURL().getProtocol() + "://" + uri.toURL().getAuthority();
+            var inputUrl = URI.create(input).toURL();
+            var checkedUrl = inputUrl.getProtocol() + "://" + inputUrl.getAuthority();
 
             var url = new Url(checkedUrl, new Timestamp(new Date().getTime()));
             if (UrlRepository.findByName(checkedUrl).isEmpty()) {
                 UrlRepository.save(url);
-                ctx.sessionAttribute("flash", "Страница успешно добавлена");
-                ctx.sessionAttribute("flashVariant", "success");
+                setFlash(ctx, "Страница успешно добавлена", "success");
             } else {
-                ctx.sessionAttribute("flash", "Страница уже существует");
-                ctx.sessionAttribute("flashVariant", "info");
+                setFlash(ctx, "Страница уже существует", "info");
             }
             ctx.redirect(NamedRoutes.urlsPath());
 
         } catch (IllegalArgumentException | MalformedURLException e) {
-            //var invalidUrl = ctx.formParam("url");
-            ctx.sessionAttribute("flash", "Некорректный URL");
-            ctx.sessionAttribute("flashVariant", "danger");
+            setFlash(ctx, "Некорректный URL", "danger");
             ctx.redirect(NamedRoutes.rootPath());
         }
     }
@@ -94,5 +88,15 @@ public class UrlsController {
         ctx.sessionAttribute("flashVariant", "success");
 
         ctx.redirect(NamedRoutes.urlPath(id));
+    }
+
+    private static void setFlash(Context ctx, String flash, String flashVariant) {
+        ctx.sessionAttribute("flash", flash);
+        ctx.sessionAttribute("flashVariant", flashVariant);
+    }
+
+    private static void pageSetFlash(Context ctx, BasePage page) {
+        page.setFlash(ctx.consumeSessionAttribute("flash"));
+        page.setVariant(ctx.consumeSessionAttribute("flashVariant"));
     }
 }

@@ -12,19 +12,6 @@ import java.util.Optional;
 
 
 public class UrlCheckRepository extends BaseRepository {
-    public static List<UrlCheck> getEntities() throws SQLException {
-        var sql = "SELECT * FROM url_checks";
-        try (var connection = dataSource.getConnection();
-             var statement = connection.prepareStatement(sql)) {
-            var resultSet = statement.executeQuery();
-            var result = new ArrayList<UrlCheck>();
-
-            while (resultSet.next()) {
-                result.add(getEntity(resultSet));
-            }
-            return result;
-        }
-    }
 
     public static List<UrlCheck> getUrlChecks(Long urlId) throws SQLException {
         var sql = "SELECT * FROM url_checks WHERE url_id = ?";

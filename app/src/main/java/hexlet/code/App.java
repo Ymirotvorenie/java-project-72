@@ -5,8 +5,8 @@ import com.zaxxer.hikari.HikariDataSource;
 import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 import gg.jte.resolve.ResourceCodeResolver;
+import hexlet.code.controllers.MainPageController;
 import hexlet.code.controllers.UrlsController;
-import hexlet.code.dto.BasePage;
 import hexlet.code.repositories.BaseRepository;
 import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
@@ -17,10 +17,7 @@ import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.stream.Collectors;
 
-import static io.javalin.rendering.template.TemplateUtil.model;
-
 public class App {
-
 
     public static void main(String[] args) throws SQLException {
         var app = getApp();
@@ -32,16 +29,7 @@ public class App {
         var hikariConfig = new HikariConfig();
         hikariConfig.setJdbcUrl(getUrl());
 
-        var dataSource = new HikariDataSource(hikariConfig);
-        var url = App.class.getClassLoader().getResourceAsStream("schema.sql");
-        var sql = new BufferedReader(new InputStreamReader(url))
-                .lines().collect(Collectors.joining("\n"));
-
-        try (var connection = dataSource.getConnection();
-             var statement = connection.createStatement()) {
-            statement.execute(sql);
-        }
-        BaseRepository.dataSource = dataSource;
+        dbConnect(hikariConfig);
 
         var app = Javalin.create(config -> {
             config.bundledPlugins.enableDevLogging();
@@ -53,13 +41,7 @@ public class App {
             ctx.header("Content-encoding", "identity");
         });
 
-        //app.get("/", ctx -> ctx.result("Hello world"));
-        app.get(NamedRoutes.rootPath(), ctx -> {
-            var page = new BasePage();
-            page.setFlash(ctx.consumeSessionAttribute("flash"));
-            page.setVariant(ctx.consumeSessionAttribute("flashVariant"));
-            ctx.render("index.jte", model("page", page));
-        });
+        app.get(NamedRoutes.rootPath(), MainPageController::index);
         app.get(NamedRoutes.urlsPath(), UrlsController::index);
         app.post(NamedRoutes.urlsPath(), UrlsController::create);
         app.get(NamedRoutes.urlPath("{id}"), UrlsController::show);
@@ -80,5 +62,18 @@ public class App {
         ClassLoader classLoader = App.class.getClassLoader();
         ResourceCodeResolver codeResolver = new ResourceCodeResolver("templates", classLoader);
         return TemplateEngine.create(codeResolver, ContentType.Html);
+    }
+
+    public static void dbConnect(HikariConfig hikariConfig) throws SQLException {
+        var dataSource = new HikariDataSource(hikariConfig);
+        var url = App.class.getClassLoader().getResourceAsStream("schema.sql");
+        var sql = new BufferedReader(new InputStreamReader(url))
+                .lines().collect(Collectors.joining("\n"));
+
+        try (var connection = dataSource.getConnection();
+             var statement = connection.createStatement()) {
+            statement.execute(sql);
+        }
+        BaseRepository.dataSource = dataSource;
     }
 }

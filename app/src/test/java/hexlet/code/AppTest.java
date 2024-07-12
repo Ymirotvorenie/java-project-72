@@ -3,6 +3,7 @@ package hexlet.code;
 import hexlet.code.model.Url;
 import hexlet.code.repositories.UrlCheckRepository;
 import hexlet.code.repositories.UrlRepository;
+import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
 import okhttp3.mockwebserver.MockResponse;
@@ -20,11 +21,13 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import static hexlet.code.App.getApp;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AppTest {
     private Javalin app;
@@ -53,7 +56,7 @@ public class AppTest {
     @Test
     public void testMainPage() {
         JavalinTest.test(app, (server, client) -> {
-            var response = client.get("/");
+            var response = client.get(NamedRoutes.rootPath());
             assertThat(response.code()).isEqualTo(200);
             assertThat(response.body().string()).contains("Анализатор страниц");
         });
@@ -63,7 +66,7 @@ public class AppTest {
     public void testCreateUrl() {
         JavalinTest.test(app, (server, client) -> {
             var requestBody = "url=https://ru.hexlet.io/my";
-            try (var response = client.post("/urls", requestBody)) {
+            try (var response = client.post(NamedRoutes.urlsPath(), requestBody)) {
                 assertEquals(response.code(), 200);
                 assertThat(response.body().string()).contains("https://ru.hexlet.io");
                 assertThat(UrlRepository.findByName("https://ru.hexlet.io")).isPresent();
@@ -72,13 +75,28 @@ public class AppTest {
     }
 
     @Test
+    public void testCreateAlreadyExistUrl() throws SQLException {
+        var url = new Url("https://ru.hexlet.io", new Timestamp(new Date().getTime()));
+        UrlRepository.save(url);
+        var repositorySize = UrlRepository.getEntities().size();
+        JavalinTest.test(app, (server, client) -> {
+            var requestBody = "url=https://ru.hexlet.io/my";
+            try (var response = client.post(NamedRoutes.urlsPath(), requestBody)) {
+                assertEquals(response.code(), 200);
+                assertEquals(UrlRepository.getEntities().size(), repositorySize);
+            }
+
+        });
+    }
+
+    @Test
     public void testCreateInvalidUrl() {
         JavalinTest.test(app, (server, client) -> {
             var requestBody = "url=fffffff";
-            try (var response = client.post("/urls", requestBody);) {
+            try (var response = client.post(NamedRoutes.urlsPath(), requestBody);) {
                 assertThat(response.code()).isEqualTo(200);
                 assertThat(response.body().string()).doesNotContain("fffffff");
-                assertThat(UrlRepository.findByName("fffffff")).isNotPresent();
+                assertThat(UrlRepository.findByName("fffffff")).isEmpty();
             }
         });
     }
@@ -88,8 +106,10 @@ public class AppTest {
         var url = new Url("https://ru.hexlet.io/my", Timestamp.valueOf(LocalDateTime.now()));
         UrlRepository.save(url);
         JavalinTest.test(app, (server, client) -> {
-            var response = client.get("/urls/" + url.getId());
+            var response = client.get(NamedRoutes.urlPath(url.getId()));
             assertThat(response.code()).isEqualTo(200);
+            response = client.get(NamedRoutes.urlPath(url.getId() + 1L));
+            assertEquals(response.code(), 404);
         });
     }
 
@@ -99,13 +119,14 @@ public class AppTest {
         UrlRepository.save(url);
 
         JavalinTest.test(app, (server, client) -> {
-            var postUrl = "/urls/" + url.getId() + "/checks";
+            var postUrl = NamedRoutes.urlCheckPath(url.getId());
             try (var response = client.post(postUrl)) {
                 assertThat(response.code()).isEqualTo(200);
 
                 var checks = UrlCheckRepository.getUrlChecks(url.getId());
                 assertFalse(checks.isEmpty());
                 assertEquals(checks.getFirst().getUrlId(), url.getId());
+                assertTrue(UrlCheckRepository.getUrlLastCheck(url.getId()).isPresent());
             }
         });
     }

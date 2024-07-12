@@ -58,8 +58,9 @@ public class UrlRepository extends BaseRepository {
                 var url = new Url(name, createdAt);
                 url.setId(id);
                 return Optional.of(url);
+            } else {
+                return Optional.empty();
             }
-            return Optional.empty();
         }
     }
 
