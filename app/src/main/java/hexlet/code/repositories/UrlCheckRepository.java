@@ -8,6 +8,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+
 
 public class UrlCheckRepository extends BaseRepository {
     public static List<UrlCheck> getEntities() throws SQLException {
@@ -39,6 +41,22 @@ public class UrlCheckRepository extends BaseRepository {
         }
     }
 
+    public static Optional<UrlCheck> getUrlLastCheck(Long id) {
+        var sql = "SELECT * FROM url_checks WHERE url_id = ? ORDER BY created_at DESC LIMIT 1";
+        try (var connection = dataSource.getConnection();
+            var statement = connection.prepareStatement(sql)) {
+            statement.setLong(1, id);
+            var resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return Optional.of(getEntity(resultSet));
+            } else {
+                return Optional.empty();
+            }
+        } catch (SQLException e) {
+            return Optional.empty();
+        }
+    }
+
     public static void save(UrlCheck check) throws SQLException {
         var sql = "INSERT INTO url_checks(url_id, status_code, h1, title, description, created_at) "
                 + "VALUES (?, ?, ?, ?, ?, ?)";
@@ -66,7 +84,7 @@ public class UrlCheckRepository extends BaseRepository {
         var id = resultSet.getLong("id");
         var statusCode = resultSet.getInt("status_code");
         var title = resultSet.getString("title");
-        var h1 = resultSet.getString("description");
+        var h1 = resultSet.getString("h1");
         var description = resultSet.getString("description");
         var urlId = resultSet.getLong("url_id");
         var createdAt = resultSet.getTimestamp("created_at");

@@ -1,7 +1,9 @@
 @import hexlet.code.dto.UrlPage
+@import java.time.format.DateTimeFormatter
 @param UrlPage page
 
 @template.layout.page(
+    page = page,
     content = @`
     <section>
 
@@ -20,7 +22,8 @@
                 </tr>
                 <tr>
                     <td>Дата создания</td>
-                    <td>${page.getUrl().getCreatedAt().toString()}</td>
+                    <td>${page.getUrl().getCreatedAt().toLocalDateTime()
+                            .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))}</td>
                 </tr>
                 </tbody>
             </table>
@@ -40,34 +43,37 @@
                 <th class="col-2">Дата проверки</th>
                 </thead>
                 <tbody>
-                    @if(!page.getChecks().isEmpty())
-                        @for(var check : page.getChecks())
-                            <tr>
-                                <td>
-                                    ${check.getId()}
-                                </td>
-                                <td>
-                                    ${check.getStatusCode()}
-                                </td>
-                                <td>
-                                    ${check.getTitle()}
-                                </td>
-                                <td>
-                                    ${check.getH1()}
-                                </td>
-                                <td>
-                                    ${check.getDescription()}
-                                </td>
-                                <td>
-                                    ${check.getCreatedAt().toString()}
-                                </td>
-                            </tr>
-                        @endfor
-                    @endif
+                @if(!page.getChecks().isEmpty())
+                    @for(var check : page.getChecks())
+                        <tr>
+                            <td>
+                                ${check.getId()}
+                            </td>
+                            <td>
+                                ${check.getStatusCode()}
+                            </td>
+                            <td>
+                                ${check.getTitle()}
+                            </td>
+                            <td>
+                                ${check.getH1()}
+                            </td>
+                            <td>
+                                ${check.getDescription()}
+                            </td>
+                            <td>
+                                ${check.getCreatedAt().toLocalDateTime()
+                                        .format(DateTimeFormatter
+                                            .ofPattern("dd/MM/yyyy HH:mm:ss"))}
+                            </td>
+                        </tr>
+                    @endfor
+                @endif
                 </tbody>
             </table>
         </div>
 
     </section>
+
     `
 )

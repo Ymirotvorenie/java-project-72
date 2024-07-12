@@ -1,4 +1,6 @@
 @import hexlet.code.dto.UrlsPage
+@import hexlet.code.repositories.UrlCheckRepository
+@import java.time.format.DateTimeFormatter
 @param UrlsPage page = null
 
 @template.layout.page(
@@ -29,9 +31,15 @@
                                 <a href="/urls/${url.getId()}">${url.getName()}</a>
                             </td>
                             <td>
-                                ${url.getCreatedAt().toString()}
+                                @if(UrlCheckRepository.getUrlLastCheck(url.getId()).isPresent())
+                                    ${UrlCheckRepository.getUrlLastCheck(url.getId()).get()
+                                        .getCreatedAt().toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))}
+                                @endif
                             </td>
                             <td>
+                                @if(UrlCheckRepository.getUrlLastCheck(url.getId()).isPresent())
+                                    ${UrlCheckRepository.getUrlLastCheck(url.getId()).get().getStatusCode()}
+                                @endif
                             </td>
                         </tr>
                     @endfor

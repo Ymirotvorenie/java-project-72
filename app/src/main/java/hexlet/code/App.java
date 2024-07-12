@@ -8,6 +8,7 @@ import gg.jte.resolve.ResourceCodeResolver;
 import hexlet.code.controllers.UrlsController;
 import hexlet.code.dto.BasePage;
 import hexlet.code.repositories.BaseRepository;
+import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinJte;
 
@@ -53,16 +54,16 @@ public class App {
         });
 
         //app.get("/", ctx -> ctx.result("Hello world"));
-        app.get("/", ctx -> {
+        app.get(NamedRoutes.rootPath(), ctx -> {
             var page = new BasePage();
             page.setFlash(ctx.consumeSessionAttribute("flash"));
             page.setVariant(ctx.consumeSessionAttribute("flashVariant"));
             ctx.render("index.jte", model("page", page));
         });
-        app.get("/urls", UrlsController::index);
-        app.post("/urls", UrlsController::create);
-        app.get("/urls/{id}", UrlsController::show);
-        app.post("/urls/{id}/checks", UrlsController::check);
+        app.get(NamedRoutes.urlsPath(), UrlsController::index);
+        app.post(NamedRoutes.urlsPath(), UrlsController::create);
+        app.get(NamedRoutes.urlPath("{id}"), UrlsController::show);
+        app.post(NamedRoutes.urlCheckPath("{id}"), UrlsController::check);
 
         return app;
     }

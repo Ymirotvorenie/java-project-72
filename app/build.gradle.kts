@@ -21,7 +21,7 @@ repositories {
 
 dependencies {
     //JUnit
-    testImplementation("org.assertj:assertj-core:3.26.0")
+    testImplementation("org.assertj:assertj-core:3.26.3")
     testImplementation(platform("org.junit:junit-bom:5.10.3"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 
@@ -58,7 +58,10 @@ dependencies {
     //MockWebServer
     testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
 
-    implementation("com.google.guava:guava:33.2.0-jre")
+    implementation("com.google.guava:guava:33.2.1-jre")
+
+    //JSOUP
+    implementation ("org.jsoup:jsoup:1.18.1")
 
 }
 

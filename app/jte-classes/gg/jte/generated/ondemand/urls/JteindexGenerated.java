@@ -1,8 +1,10 @@
 package gg.jte.generated.ondemand.urls;
 import hexlet.code.dto.UrlsPage;
+import hexlet.code.repositories.UrlCheckRepository;
+import java.time.format.DateTimeFormatter;
 public final class JteindexGenerated {
 	public static final String JTE_NAME = "urls/index.jte";
-	public static final int[] JTE_LINE_INFO = {0,0,1,1,1,3,3,6,6,22,22,23,23,26,26,26,29,29,29,29,29,29,29,32,32,32,37,37,38,38,44,44,44,45,45,45,1,1,1,1};
+	public static final int[] JTE_LINE_INFO = {0,0,1,2,3,3,3,5,5,8,8,24,24,25,25,28,28,28,31,31,31,31,31,31,31,34,34,35,36,36,36,37,37,40,40,41,41,41,42,42,45,45,46,46,52,52,52,53,53,53,3,3,3,3};
 	public static void render(gg.jte.html.HtmlTemplateOutput jteOutput, gg.jte.html.HtmlInterceptor jteHtmlInterceptor, UrlsPage page) {
 		jteOutput.writeContent("\n");
 		gg.jte.generated.ondemand.layout.JtepageGenerated.render(jteOutput, jteHtmlInterceptor, new gg.jte.html.HtmlContent() {
@@ -22,9 +24,21 @@ public final class JteindexGenerated {
 						jteOutput.setContext("a", null);
 						jteOutput.writeUserContent(url.getName());
 						jteOutput.writeContent("</a>\n                            </td>\n                            <td>\n                                ");
-						jteOutput.setContext("td", null);
-						jteOutput.writeUserContent(url.getCreatedAt().toString());
-						jteOutput.writeContent("\n                            </td>\n                            <td>\n                            </td>\n                        </tr>\n                    ");
+						if (UrlCheckRepository.getUrlLastCheck(url.getId()).isPresent()) {
+							jteOutput.writeContent("\n                                    ");
+							jteOutput.setContext("td", null);
+							jteOutput.writeUserContent(UrlCheckRepository.getUrlLastCheck(url.getId()).get()
+                                        .getCreatedAt().toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
+							jteOutput.writeContent("\n                                ");
+						}
+						jteOutput.writeContent("\n                            </td>\n                            <td>\n                                ");
+						if (UrlCheckRepository.getUrlLastCheck(url.getId()).isPresent()) {
+							jteOutput.writeContent("\n                                    ");
+							jteOutput.setContext("td", null);
+							jteOutput.writeUserContent(UrlCheckRepository.getUrlLastCheck(url.getId()).get().getStatusCode());
+							jteOutput.writeContent("\n                                ");
+						}
+						jteOutput.writeContent("\n                            </td>\n                        </tr>\n                    ");
 					}
 					jteOutput.writeContent("\n                ");
 				}
