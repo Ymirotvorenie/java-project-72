@@ -8,15 +8,22 @@
 
 Учебный проект Hexlet. Веб-приложение, которое проводит проверку доступности сайта, а также небольшой SEO-анализ
 
+Использованные технологии:
+* Javalin, Unirest
+* JTE, Bootstrap
+* Lombok
+* PostgreSQL, H2, JDBC
+* JUnit, MockWebServer
+
 https://java-project-72-zey6.onrender.com/
 * Приложение задеплоено через render.com free plan. Доступно до 08.08.2024
 
-### **Install app**
+### **Установить локальную версию**
 ```
 make install
 ```
 
-### **Run app**
+### **Запустить локальную версию**
 ```
 make run-dist
 ```
