@@ -1,6 +1,4 @@
 @import hexlet.code.dto.UrlsPage
-@import hexlet.code.repositories.UrlCheckRepository
-@import java.time.format.DateTimeFormatter
 @param UrlsPage page = null
 
 @template.layout.page(
@@ -30,7 +28,7 @@
                             <td>
                                 <a href="/urls/${url.getId()}">${url.getName()}</a>
                             </td>
-                            @if (!page.getLastChecks().isEmpty())
+                            @if (page.getLastChecks().get(url.getId()) != null)
                             <td>
                                 ${page.getLastChecks().get(url.getId()).getCreatedAt().toString()}
                             </td>
