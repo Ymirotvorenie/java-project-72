@@ -30,17 +30,17 @@
                             <td>
                                 <a href="/urls/${url.getId()}">${url.getName()}</a>
                             </td>
+                            @if (!page.getLastChecks().isEmpty())
                             <td>
-                                @if(UrlCheckRepository.getUrlLastCheck(url.getId()).isPresent())
-                                    ${UrlCheckRepository.getUrlLastCheck(url.getId()).get()
-                                        .getCreatedAt().toLocalDateTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))}
-                                @endif
+                                ${page.getLastChecks().get(url.getId()).getCreatedAt().toString()}
                             </td>
                             <td>
-                                @if(UrlCheckRepository.getUrlLastCheck(url.getId()).isPresent())
-                                    ${UrlCheckRepository.getUrlLastCheck(url.getId()).get().getStatusCode()}
-                                @endif
+                                ${page.getLastChecks().get(url.getId()).getStatusCode()}
                             </td>
+                            @else
+                            <td></td>
+                            <td></td>
+                            @endif
                         </tr>
                     @endfor
                 @endif

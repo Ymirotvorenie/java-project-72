@@ -5,9 +5,13 @@ import hexlet.code.model.UrlCheck;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -44,6 +48,23 @@ public class UrlCheckRepository extends BaseRepository {
         }
     }
 
+    public static Map<Long, UrlCheck> getLastChecks() throws SQLException {
+        var sql = "SELECT * FROM url_checks GROUP BY url_id ORDER BY created_at DESC";
+        try (var connection = dataSource.getConnection();
+             var statement = connection.prepareStatement(sql)) {
+            var resultSet = statement.executeQuery();
+            var result = new HashMap<Long, UrlCheck>();
+
+            while (resultSet.next()) {
+                var value = getEntity(resultSet);
+                var key = value.getUrlId();
+
+                result.put(key, value);
+            }
+            return result;
+        }
+    }
+
     public static void save(UrlCheck check) throws SQLException {
         var sql = "INSERT INTO url_checks(url_id, status_code, h1, title, description, created_at) "
                 + "VALUES (?, ?, ?, ?, ?, ?)";
@@ -54,7 +75,7 @@ public class UrlCheckRepository extends BaseRepository {
             preparedStatement.setString(3, check.getH1());
             preparedStatement.setString(4, check.getTitle());
             preparedStatement.setString(5, check.getDescription());
-            preparedStatement.setTimestamp(6, check.getCreatedAt());
+            preparedStatement.setTimestamp(6, new Timestamp(new Date().getTime()));
             preparedStatement.executeUpdate();
 
             var generatedKeys = preparedStatement.getGeneratedKeys();

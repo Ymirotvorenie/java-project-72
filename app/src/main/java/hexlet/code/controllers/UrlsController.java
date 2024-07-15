@@ -18,8 +18,6 @@ import org.jsoup.Jsoup;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.Date;
 
 import static io.javalin.rendering.template.TemplateUtil.model;
 
@@ -27,7 +25,8 @@ public class UrlsController {
 
     public static void index(Context ctx) throws SQLException {
         var urls = UrlRepository.getEntities();
-        var page = new UrlsPage(urls);
+        var checks = UrlCheckRepository.getLastChecks();
+        var page = new UrlsPage(urls, checks);
         pageSetFlash(ctx, page);
         ctx.render("urls/index.jte", model("page", page));
     }
@@ -47,7 +46,7 @@ public class UrlsController {
             var inputUrl = URI.create(input).toURL();
             var checkedUrl = inputUrl.getProtocol() + "://" + inputUrl.getAuthority();
 
-            var url = new Url(checkedUrl, new Timestamp(new Date().getTime()));
+            var url = new Url(checkedUrl);
             if (UrlRepository.findByName(checkedUrl).isEmpty()) {
                 UrlRepository.save(url);
                 setFlash(ctx, "Страница успешно добавлена", "success");
@@ -80,7 +79,7 @@ public class UrlsController {
         var descriptionTag = body.selectFirst("meta[name=\"description\"]");
         var description = descriptionTag != null ? descriptionTag.attr("content") : "";
 
-        var check = new UrlCheck(status, title, h1, description, id, new Timestamp(new Date().getTime()));
+        var check = new UrlCheck(status, title, h1, description, id);
 
         UrlCheckRepository.save(check);
 

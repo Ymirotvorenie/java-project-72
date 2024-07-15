@@ -12,10 +12,10 @@ public class Url {
     @Setter
     private Long id;
     private String name;
+    @Setter
     private Timestamp createdAt;
 
-    public Url(String name, Timestamp createdAt) {
+    public Url(String name) {
         this.name = name;
-        this.createdAt = createdAt;
     }
 }

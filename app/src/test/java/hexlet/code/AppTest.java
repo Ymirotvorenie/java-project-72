@@ -76,7 +76,8 @@ public class AppTest {
 
     @Test
     public void testCreateAlreadyExistUrl() throws SQLException {
-        var url = new Url("https://ru.hexlet.io", new Timestamp(new Date().getTime()));
+        var url = new Url("https://ru.hexlet.io");
+        url.setCreatedAt(new Timestamp(new Date().getTime()));
         UrlRepository.save(url);
         var repositorySize = UrlRepository.getEntities().size();
         JavalinTest.test(app, (server, client) -> {
@@ -103,7 +104,8 @@ public class AppTest {
 
     @Test
     public void testUrlPage() throws SQLException {
-        var url = new Url("https://ru.hexlet.io/my", Timestamp.valueOf(LocalDateTime.now()));
+        var url = new Url("https://ru.hexlet.io");
+        url.setCreatedAt(new Timestamp(new Date().getTime()));
         UrlRepository.save(url);
         JavalinTest.test(app, (server, client) -> {
             var response = client.get(NamedRoutes.urlPath(url.getId()));
@@ -115,7 +117,8 @@ public class AppTest {
 
     @Test
     public void testUrlCheck() throws SQLException {
-        var url = new Url(testUrl, Timestamp.valueOf(LocalDateTime.now()));
+        var url = new Url(testUrl);
+        url.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
         UrlRepository.save(url);
 
         JavalinTest.test(app, (server, client) -> {
